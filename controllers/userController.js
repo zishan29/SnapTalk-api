@@ -54,11 +54,16 @@ exports.signUp = [
         password: hashedPassword,
         email: req.body.email,
         contacts: [],
-        profilePicture: req.body.profilePicture,
+        profilePicture: '',
       });
       try {
         await user.save();
-        res.status(200).json({ message: 'User created successfully' });
+        const token = jwt.sign({ user }, process.env.SECRET_KEY, {
+          expiresIn: '1d',
+        });
+        res
+          .status(200)
+          .json({ message: 'User created successfully', user, token });
       } catch (err) {
         next(err);
       }

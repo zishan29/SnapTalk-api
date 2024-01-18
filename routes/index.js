@@ -11,10 +11,22 @@ router.post('/login', userController.login);
 
 router.post('/verifyToken', userController.verifyToken);
 
-router.get('/users', userController.getAllUsers);
+router.get(
+  '/users',
+  passport.authenticate('jwt', { session: false }),
+  userController.getAllUsers,
+);
 
-router.get('/messages', messageController.getMessages);
+router.get(
+  '/messages',
+  passport.authenticate('jwt', { session: false }),
+  messageController.getMessages,
+);
 
-router.post('/messages', messageController.createMessage);
+router.post(
+  '/messages',
+  passport.authenticate('jwt', { session: false }),
+  messageController.createMessage,
+);
 
 module.exports = router;
