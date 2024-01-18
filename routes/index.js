@@ -9,6 +9,8 @@ router.post('/signup', userController.signUp);
 
 router.post('/login', userController.login);
 
+router.post('/verifyToken', userController.verifyToken);
+
 router.get('/users', userController.getAllUsers);
 
 router.get('/messages', messageController.getMessages);

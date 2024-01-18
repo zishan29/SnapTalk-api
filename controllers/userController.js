@@ -104,3 +104,24 @@ exports.getAllUsers = asyncHandler(async (req, res, next) => {
     res.status(400).json({ err });
   }
 });
+
+exports.verifyToken = asyncHandler(async (req, res, next) => {
+  const { token } = req.body;
+  console.log(token);
+  if (!token) {
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = decoded;
+
+    res.status(200).json({ message: 'Token is valid' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      res.status(401).json({ error: 'Token expired' });
+    } else {
+      res.status(401).json({ error: 'Unauthorized' });
+    }
+  }
+});
