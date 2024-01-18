@@ -8,7 +8,7 @@ const User = require('../models/user');
 exports.signUp = [
   body('username').custom(async (username) => {
     if (!username || username.length < 3) {
-      throw new Error('Username must be at least 3 characters long');
+      throw new Error('Username is too short');
     }
 
     const user = await User.findOne({ username });
@@ -24,9 +24,7 @@ exports.signUp = [
       throw new Error('Email already in use');
     }
   }),
-  body('password')
-    .isLength({ min: 5 })
-    .withMessage('Password must be at least 6 characters long'),
+  body('password').isLength({ min: 5 }).withMessage('Password is too short'),
   body('confirmPassword').custom((value, { req }) => {
     if (value !== req.body.password) {
       throw new Error('Passwords do not match');
