@@ -78,16 +78,15 @@ exports.login = asyncHandler(async (req, res, next) => {
         if (err) {
           next(err);
         }
-        const body = {
+        const userData = {
           _id: user._id,
           username: user.username,
-          admin: user.admin,
         };
-        const token = jwt.sign({ user: body }, process.env.SECRET_KEY, {
+        const token = jwt.sign({ user: userData }, process.env.SECRET_KEY, {
           expiresIn: '1d',
         });
 
-        res.status(200).json({ body, token });
+        res.status(200).json({ userData, token });
       });
     })(req, res, next);
   } catch (err) {
