@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const mongoose = require('mongoose');
 const User = require('../models/user');
 
 exports.signUp = [
@@ -126,5 +127,48 @@ exports.verifyToken = asyncHandler(async (req, res, next) => {
     } else {
       res.status(401).json({ error: 'Unauthorized' });
     }
+  }
+});
+
+exports.addContact = asyncHandler(async (req, res, next) => {
+  try {
+    const { contactId } = req.body;
+
+    if (!contactId || !mongoose.Types.ObjectId.isValid(contactId)) {
+      return res.status(400).json({ error: 'Invalid contact ID' });
+    }
+    await Promise.all([
+      User.updateOne(
+        { _id: req.user._id },
+        { $addToSet: { contacts: contactId } },
+      ),
+      User.updateOne(
+        { _id: contactId },
+        { $addToSet: { contacts: req.user._id } },
+      ),
+    ]);
+
+    res.status(200).json({ message: 'contact added successfully' });
+  } catch (err) {
+    res.status(400).json({ err });
+  }
+});
+
+exports.removeContact = asyncHandler(async (req, res, next) => {
+  try {
+    const { contactId } = req.body;
+
+    if (!contactId || !mongoose.Types.ObjectId.isValid(contactId)) {
+      return res.status(400).json({ error: 'Invalid contact ID' });
+    }
+
+    await Promise.all([
+      User.updateOne({ _id: req.user._id }, { $pull: { contacts: contactId } }),
+      User.updateOne({ _id: contactId }, { $pull: { contacts: req.user._id } }),
+    ]);
+
+    res.status(200).json({ message: 'Contact removed successfully' });
+  } catch (err) {
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });

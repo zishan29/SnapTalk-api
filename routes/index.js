@@ -29,4 +29,16 @@ router.post(
   messageController.createMessage,
 );
 
+router.put(
+  '/contacts',
+  passport.authenticate('jwt', { session: false }),
+  userController.addContact,
+);
+
+router.delete(
+  '/contacts',
+  passport.authenticate('jwt', { session: false }),
+  userController.removeContact,
+);
+
 module.exports = router;
