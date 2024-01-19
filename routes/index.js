@@ -29,6 +29,12 @@ router.post(
   messageController.createMessage,
 );
 
+router.get(
+  '/user',
+  passport.authenticate('jwt', { session: false }),
+  userController.getUser,
+);
+
 router.put(
   '/contacts',
   passport.authenticate('jwt', { session: false }),
