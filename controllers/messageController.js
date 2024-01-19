@@ -9,7 +9,7 @@ exports.getMessages = asyncHandler(async (req, res, next) => {
         { sender: req.user._id, receiver: req.params.receiverId },
         { sender: req.params.receiverId, receiver: req.user._id },
       ],
-    });
+    }).sort({ createdAt: 1 });
     res.status(200).json({ messages });
   } catch (err) {
     res.status(400).json({ err });
