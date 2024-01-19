@@ -5,7 +5,10 @@ const Message = require('../models/message');
 exports.getMessages = asyncHandler(async (req, res, next) => {
   try {
     const messages = await Message.find({
-      $or: [{ sender: req.user._id, receiver: req.params.receiverId }],
+      $or: [
+        { sender: req.user._id, receiver: req.params.receiverId },
+        { sender: req.params.receiverId, receiver: req.user._id },
+      ],
     });
     res.status(200).json({ messages });
   } catch (err) {
@@ -16,7 +19,7 @@ exports.getMessages = asyncHandler(async (req, res, next) => {
 exports.createMessage = asyncHandler(async (req, res, next) => {
   const newMessage = new Message({
     content: req.body.content,
-    sender: req.body.senderId,
+    sender: req.user._id,
     receiver: req.body.receiverId,
   });
   try {
