@@ -18,7 +18,7 @@ router.get(
 );
 
 router.get(
-  '/messages',
+  '/messages/:receiverId',
   passport.authenticate('jwt', { session: false }),
   messageController.getMessages,
 );
