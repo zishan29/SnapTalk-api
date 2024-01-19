@@ -5,7 +5,7 @@ const Message = require('../models/message');
 exports.getMessages = asyncHandler(async (req, res, next) => {
   try {
     const messages = await Message.find({
-      $or: [{ sender: req.body.senderId, receiver: req.body.receiverId }],
+      $or: [{ sender: req.user._id, receiver: req.body.receiverId }],
     });
     res.status(200).json({ messages });
   } catch (err) {
