@@ -1,5 +1,6 @@
-const { body, validationResult } = require('express-validator');
+const cloudinary = require('cloudinary').v2;
 const asyncHandler = require('express-async-handler');
+const { v4: uuidv4 } = require('uuid');
 const Message = require('../models/message');
 
 exports.getMessages = asyncHandler(async (req, res, next) => {
@@ -17,11 +18,37 @@ exports.getMessages = asyncHandler(async (req, res, next) => {
 });
 
 exports.createMessage = asyncHandler(async (req, res, next) => {
+  let imageUrl;
+
+  if (req.file) {
+    try {
+      const uniqueIdentifier = uuidv4();
+
+      const imageBuffer = req.file.buffer.toString('base64');
+
+      const result = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${imageBuffer}`,
+        { public_id: uniqueIdentifier, folder: 'SnapTalk/images/' },
+      );
+
+      imageUrl = result.secure_url;
+    } catch (error) {
+      console.error('Error uploading image to cloud:', error);
+      return res.status(500).json({ error: 'Error uploading image to cloud' });
+    }
+  }
+
+  console.log(req.body);
+
   const newMessage = new Message({
-    content: req.body.content,
+    content: {
+      type: req.body.content.type,
+      data: imageUrl || req.body.content.data,
+    },
     sender: req.user._id,
     receiver: req.body.receiverId,
   });
+
   try {
     await newMessage.save();
     res.status(200).json({ message: 'New message created successfully' });

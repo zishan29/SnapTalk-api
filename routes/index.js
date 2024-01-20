@@ -1,9 +1,13 @@
 const express = require('express');
 const passport = require('passport');
+const multer = require('multer');
 const userController = require('../controllers/userController');
 const messageController = require('../controllers/messageController');
 
 const router = express.Router();
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 router.post('/signup', userController.signUp);
 
@@ -26,6 +30,7 @@ router.get(
 router.post(
   '/messages',
   passport.authenticate('jwt', { session: false }),
+  upload.single('image'),
   messageController.createMessage,
 );
 
