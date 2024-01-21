@@ -185,7 +185,7 @@ exports.removeContact = asyncHandler(async (req, res, next) => {
 });
 
 exports.editUser = asyncHandler(async (req, res, next) => {
-  let imageUrl = '';
+  let imageUrl;
 
   if (req.file) {
     try {
@@ -205,12 +205,22 @@ exports.editUser = asyncHandler(async (req, res, next) => {
     }
   }
 
-  const newData = {
-    username: req.body.username ? req.body.username : req.user.username,
-    email: req.body.email ? req.body.email : req.user.email,
-    profilePicture: imageUrl,
-    _id: req.user._id,
-  };
+  let newData;
+
+  if (imageUrl === 'undefined') {
+    newData = {
+      username: req.body.username ? req.body.username : req.user.username,
+      email: req.body.email ? req.body.email : req.user.email,
+      _id: req.user._id,
+    };
+  } else {
+    newData = {
+      username: req.body.username ? req.body.username : req.user.username,
+      email: req.body.email ? req.body.email : req.user.email,
+      profilePicture: imageUrl,
+      _id: req.user._id,
+    };
+  }
 
   try {
     const updatedUser = await User.findByIdAndUpdate(req.user._id, newData, {
