@@ -38,8 +38,6 @@ exports.createMessage = asyncHandler(async (req, res, next) => {
     }
   }
 
-  console.log(req.body);
-
   const newMessage = new Message({
     content: {
       type: req.body.content.type,

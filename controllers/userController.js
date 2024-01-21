@@ -5,6 +5,8 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const mongoose = require('mongoose');
 const User = require('../models/user');
+const cloudinary = require('cloudinary').v2;
+const { v4: uuidv4 } = require('uuid');
 
 exports.signUp = [
   body('username').custom(async (username) => {
@@ -179,5 +181,48 @@ exports.removeContact = asyncHandler(async (req, res, next) => {
     res.status(200).json({ message: 'Contact removed successfully' });
   } catch (err) {
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+exports.editUser = asyncHandler(async (req, res, next) => {
+  let imageUrl = '';
+
+  if (req.file) {
+    try {
+      const uniqueIdentifier = uuidv4();
+
+      const imageBuffer = req.file.buffer.toString('base64');
+
+      const result = await cloudinary.uploader.upload(
+        `data:${req.file.mimetype};base64,${imageBuffer}`,
+        { public_id: uniqueIdentifier, folder: 'SnapTalk/profileImages/' },
+      );
+
+      imageUrl = result.secure_url;
+    } catch (error) {
+      console.error('Error uploading image to cloud:', error);
+      return res.status(500).json({ error: 'Error uploading image to cloud' });
+    }
+  }
+
+  const newData = {
+    username: req.body.username ? req.body.username : req.user.username,
+    email: req.body.email ? req.body.email : req.user.email,
+    profilePicture: imageUrl,
+    _id: req.user._id,
+  };
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, newData, {
+      new: true,
+    });
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ user: updatedUser });
+  } catch (err) {
+    res.status(400).json({ err });
   }
 });

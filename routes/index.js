@@ -40,6 +40,13 @@ router.get(
   userController.getUser,
 );
 
+router.post(
+  '/user',
+  passport.authenticate('jwt', { session: false }),
+  upload.single('image'),
+  userController.editUser,
+);
+
 router.put(
   '/contacts',
   passport.authenticate('jwt', { session: false }),
