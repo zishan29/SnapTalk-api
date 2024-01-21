@@ -26,8 +26,8 @@ db.on('error', console.error.bind(console, 'mongo connection error'));
 
 const corsOptions = {
   origin: [
-    'https://snaptalk-411413.web.app/',
-    'https://snaptalk-411413.firebaseapp.com/',
+    'https://snaptalk-411413.web.app',
+    'https://snaptalk-411413.firebaseapp.com',
     'http://localhost:3000',
   ],
   optionsSuccessStatus: 200,
