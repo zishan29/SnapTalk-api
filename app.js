@@ -25,7 +25,11 @@ const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongo connection error'));
 
 const corsOptions = {
-  origin: ['https://blog-bice-tau-13.vercel.app', 'http://localhost:3000'],
+  origin: [
+    'https://snaptalk-411413.web.app/',
+    'https://snaptalk-411413.firebaseapp.com/',
+    'http://localhost:3000',
+  ],
   optionsSuccessStatus: 200,
 };
 
